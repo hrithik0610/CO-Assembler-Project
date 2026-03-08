@@ -1,3 +1,2 @@
 from isa_dicts import *
-
-print("Assembler Started.")
+import sys
