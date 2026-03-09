@@ -118,7 +118,112 @@ def check_program_errors(lines):
             original_line_numbers.append(line_num)
         line_num += 1
 
+    if len(clean_lines) > 64:
+        print("Error: Program memory overflow. Maximum 64 instructions allowed.")
+        return False
 
+    if len(clean_lines) == 0:
+        print("Error: The input file is empty.")
+        return False
+    
+    last_line = clean_lines[-1]
+    if ":" in last_line:
+        last_line = last_line.split(":")[1].strip()
+        
+    last_instr = last_line.replace(" ", "")
+    if last_instr != "beqzero,zero,0x00000000" and last_instr != "beqzero,zero,0":
+        print("Error: Virtual halt is not at the last instruction.")
+        return False
+    count = 0
+    for i in range(len(clean_lines)):
+        temp_line = clean_lines[i]
+        if ":" in temp_line:
+            temp_line = temp_line.split(":")[1].strip()
+            
+        temp_instr = temp_line.replace(" ", "")
+        if temp_instr != "beqzero,zero,0x00000000" or temp_instr != "beqzero,zero,0":
+            count += 1
+            
+    if count == 0:
+        print(f"Error: Virtual halt is missing.")
+        return False
+
+    for i in range(len(clean_lines)):
+        line = clean_lines[i]
+        orig_num = original_line_numbers[i]
+
+        if ":" in line:
+            parts = line.split(":")
+            line = parts[1].strip()
+
+        clean_line = line.replace(",", " ").replace("(", " ").replace(")", " ")
+        words = clean_line.split()
+
+        if len(words) == 0:
+            continue
+            
+        opcode = words[0]
+
+        if opcode not in valid_opcodes:
+            print(f"Error at line {orig_num}: Invalid instruction or typo '{opcode}'")
+            return False
+
+        args = words[1:]
+        
+        if opcode in R_type:
+            if len(args) != 3:
+                print(f"Error at line {orig_num}: {opcode} needs 3 operands.")
+                return False
+            for reg in args:
+                if reg not in registers:
+                    print(f"Error at line {orig_num}: Invalid register '{reg}'")
+                    return False
+
+        elif opcode in I_type:
+            if len(args) != 3:
+                print(f"Error at line {orig_num}: {opcode} needs 3 operands")
+                return False
+            if args[0] not in registers or args[1] not in registers:
+                print(f"Error at line {orig_num}: Invalid register name")
+                return False
+            if not is_valid_immediate(args[2], 12):
+                print(f"Error at line {orig_num}: Immediate number goes out of bounds")
+                return False
+
+        elif opcode in I_type_load or opcode in S_type:
+            if len(args) != 3:
+                print(f"Error at line {orig_num}: {opcode} needs 3 operands")
+                return False
+            if args[0] not in registers or args[2] not in registers:
+                print(f"Error at line {orig_num}: Invalid register name")
+                return False
+            if not is_valid_immediate(args[1], 12):
+                print(f"Error at line {orig_num}: Immediate number goes out of bounds")
+                return False
+
+        elif opcode in B_type:
+            if len(args) != 3:
+                print(f"Error at line {orig_num}: {opcode} needs 3 operands")
+                return False
+            if args[0] not in registers or args[1] not in registers:
+                print(f"Error at line {orig_num}: Invalid register name")
+                return False
+            if not is_valid_immediate(args[2], 12):
+                print(f"Error at line {orig_num}: Immediate number goes out of bounds")
+                return False
+
+        elif opcode in U_type or opcode in J_type:
+            if len(args) != 2:
+                print(f"Error at line {orig_num}: {opcode} needs 2 operands")
+                return False
+            if args[0] not in registers:
+                print(f"Error at line {orig_num}: Invalid register name")
+                return False
+            if not is_valid_immediate(args[1], 20):
+                print(f"Error at line {orig_num}: Immediate number goes out of bounds")
+                return False
+
+    return True
 
 
 
