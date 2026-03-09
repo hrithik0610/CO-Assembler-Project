@@ -326,3 +326,56 @@ def translate_J_type(parts, labels, pc):
     bin_v = dec_to_bin(v, 21)
     res = bin_v[0] + bin_v[10:20] + bin_v[9] + bin_v[1:9] + dest + opcode_dict[cmd]
     return res
+
+def translate_instruction(parts, labels, pc):
+    cmd = parts[0]
+    if cmd in ["add", "sub", "sll", "slt", "sltu", "xor", "srl", "or", "and"]:
+        return translate_R_type(parts)
+    if cmd in ["addi", "lw", "sltiu", "jalr"]:
+        return translate_I_type(parts)
+    if cmd == "sw":
+        return translate_S_type(parts)
+    if cmd in ["beq", "bne", "blt", "bge", "bltu", "bgeu"]:
+        return translate_B_type(parts, labels, pc)
+    if cmd in ["lui", "auipc"]:
+        return translate_U_type(parts)
+    if cmd == "jal":
+        return translate_J_type(parts, labels, pc) 
+
+# 7. MAIN ASSEMBLY PROCESS
+
+def assemble(lines, labels):
+    pc = 0
+    output = []
+    for line in lines:
+        instruction = remove_label(line)
+        if instruction is None:
+            continue
+        parts = parse_instruction(instruction)
+        binary = translate_instruction(parts, labels, pc)
+        output.append(binary)
+        pc += 4
+    return output
+
+def main():
+    if len(sys.argv) < 3:
+        print("Usage: python Assembler.py <input_file> <output_file>")
+        return
+
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
+
+    lines = read_file(input_file)
+    
+    is_valid = check_program_errors(lines)
+    if is_valid == False:
+        return 
+
+    lines = clean_lines(lines)
+    labels = first_pass_labels(lines)
+    binary_lines = assemble(lines, labels)
+    
+    write_output(output_file, binary_lines)
+
+if __name__ == "__main__":
+    main()
