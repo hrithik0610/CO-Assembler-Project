@@ -225,7 +225,35 @@ def check_program_errors(lines):
 
     return True
 
+# 4. PARSING & LABEL HANDLING
 
+def first_pass_labels(lines):
+    labels = {}
+    pc = 0
+    for line in lines:
+        if ":" in line:
+            label = line.split(":")[0].strip()
+            labels[label] = pc
+            if line.endswith(":"):
+                continue
+        pc += 4
+    return labels
+
+def remove_label(line):
+    if ":" in line:
+        parts = line.split(":", 1)
+        if parts[1].strip() == "":
+            return None
+        return parts[1].strip()
+    return line
+
+def parse_instruction(instruction):
+    instruction = instruction.replace(",", " ")
+    instruction = instruction.replace("(", " ")
+    instruction = instruction.replace(")", " ")
+    return instruction.split()
+
+# 5. TRANSLATION MATH & HELPERS
 
 def dec_to_bin(num, bits):
     if num < 0: num = (1 << bits) + num
