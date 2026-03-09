@@ -267,6 +267,27 @@ def parse_imm(x):
     if '0x' in s: return int(s, 16)
     return int(s)
 
+def translate_R_type(parts):
+    c = parts[0]
+    d = registers[parts[1]]
+    s1 = registers[parts[2]]
+    s2 = registers[parts[3]]
+    return funct7_dict[c] + s2 + s1 + funct3_dict[c] + d + opcode_dict[c]
+
+def translate_I_type(parts):
+    o = parts[0]
+    if o == "lw":
+        rd = registers[parts[1]]
+        i = parse_imm(parts[2])
+        rs1 = registers[parts[3]]
+    else:
+        rd = registers[parts[1]]
+        rs1 = registers[parts[2]]
+        i = parse_imm(parts[3])
+        
+    b = dec_to_bin(i, 12)
+    return b + rs1 + funct3_dict[o] + rd + opcode_dict[o]
+
 def translate_S_type(parts):
     opc = parts[0]
     r2 = registers[parts[1]]
