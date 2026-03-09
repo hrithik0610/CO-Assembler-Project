@@ -60,6 +60,27 @@ funct7_dict = {
     "sltu": "0000000", "xor": "0000000", "srl": "0000000", "or": "0000000", "and": "0000000"
 }
 
+# 2. FILE I/O AND CLEANING
+
+def read_file(path):
+    with open(path, "r") as f:
+        return f.readlines()
+
+def clean_lines(lines):
+    cleaned = []
+    for line in lines:
+        line = line.strip()
+        if line == "":
+            continue
+        cleaned.append(line)
+    return cleaned
+
+def write_output(path, binary_lines):
+    with open(path, "w") as f:
+        for line in binary_lines:
+            f.write(line + "\n")
+
+
 def dec_to_bin(num, bits):
     if num < 0: num = (1 << bits) + num
     return format(num, '0' + str(bits) + 'b')
