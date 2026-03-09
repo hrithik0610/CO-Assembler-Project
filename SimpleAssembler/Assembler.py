@@ -162,6 +162,7 @@ instr_type = {
     "jal": "J"
 }
 
+<<<<<<< Updated upstream
 def dec_to_bin(num, bits):
     if num < 0: num = (1 << bits) + num
     return format(num, '0' + str(bits) + 'b')
@@ -213,3 +214,5 @@ def translate_J_type(parts, labels, pc):
     res = bin_v[0] + bin_v[10:20] + bin_v[9] + bin_v[1:9] + dest + opcode_dict[cmd]
     return res
 
+=======
+>>>>>>> Stashed changes
