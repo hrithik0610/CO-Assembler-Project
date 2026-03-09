@@ -80,6 +80,47 @@ def write_output(path, binary_lines):
         for line in binary_lines:
             f.write(line + "\n")
 
+# 3. ERROR CHECKING
+
+def is_valid_immediate(imm_string, bit_size):
+    try:
+        if "0x" in imm_string or "0X" in imm_string:
+            val = int(imm_string, 16)
+        else:
+            val = int(imm_string)
+        if bit_size == 12:
+            if val < -2048 or val > 2047: return False
+        elif bit_size == 20:
+            if val < -1048576 or val > 1048575: return False
+        return True
+    except ValueError:
+        return True 
+
+def check_program_errors(lines):
+    R_type = ["add", "sub", "slt", "sltu", "xor", "sll", "srl", "or", "and"]
+    I_type = ["addi", "sltiu", "jalr"]
+    I_type_load = ["lw"]
+    S_type = ["sw"]
+    B_type = ["beq", "bne", "blt", "bge", "bltu", "bgeu"]
+    U_type = ["lui", "auipc"]
+    J_type = ["jal"]
+    
+    valid_opcodes = R_type + I_type + I_type_load + S_type + B_type + U_type + J_type
+
+    clean_lines = []
+    original_line_numbers = []
+    
+    line_num = 1
+    for line in lines:
+        stripped_line = line.strip()
+        if stripped_line != "": 
+            clean_lines.append(stripped_line)
+            original_line_numbers.append(line_num)
+        line_num += 1
+
+
+
+
 
 def dec_to_bin(num, bits):
     if num < 0: num = (1 << bits) + num
