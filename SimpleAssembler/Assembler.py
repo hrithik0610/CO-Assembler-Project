@@ -1,3 +1,5 @@
+import sys 
+
 #register dictionaries
 registers = {
     "x0": "00000", "zero": "00000",
