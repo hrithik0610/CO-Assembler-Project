@@ -110,6 +110,3 @@ def translate_J_type(parts, labels, pc):
     bin_v = dec_to_bin(v, 21)
     res = bin_v[0] + bin_v[10:20] + bin_v[9] + bin_v[1:9] + dest + opcode_dict[cmd]
     return res
-
-=======
->>>>>>> Stashed changes
