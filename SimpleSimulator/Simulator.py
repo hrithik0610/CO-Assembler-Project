@@ -220,7 +220,7 @@ def simulate(instructions, output_file):
 
 def main():
 
-    if len(sys.argv) != 3:
+    if len(sys.argv) != 4:
         print("Usage: python simulator.py <input_file> <output_file>")
         return
 
