@@ -31,3 +31,17 @@ def print_memory(memory, outfile):
         addr = base + i * 4
         val = format(memory[i] & 0xFFFFFFFF, '032b')
         outfile.write(f"{hex(addr)}: {val}\n")
+
+# HALT CHECK
+
+def is_halt(instr):
+    opcode = instr[25:32]
+    if opcode != "1100011":
+        return False
+
+    rs1 = int(instr[12:17], 2)
+    rs2 = int(instr[7:12], 2)
+
+    imm = instr[0:7] + instr[20:25]
+
+    return rs1 == 0 and rs2 == 0 and int(imm, 2) == 0
