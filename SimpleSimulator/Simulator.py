@@ -120,3 +120,37 @@ def execute_instruction(instr, pc, registers, memory):
         memory[addr // 4] = registers[rs2]
 
         pc += 4
+
+    # U-TYPE
+    elif opcode == "0110111":  # lui
+        imm = int(instr[0:20], 2) << 12
+        registers[rd] = imm
+        pc += 4
+
+    elif opcode == "0010111":  # auipc
+        imm = int(instr[0:20], 2) << 12
+        registers[rd] = pc + imm
+        pc += 4
+
+    # J-TYPE
+    elif opcode == "1101111":  # jal
+
+        imm = (
+            instr[0] + instr[12:20] +
+            instr[11] + instr[1:11] + "0"
+        )
+        imm = sign_extend(int(imm, 2), 21)
+
+        registers[rd] = pc + 4
+        pc += imm
+
+    # JALR 
+    elif opcode == "1100111":
+
+        imm = sign_extend(int(instr[0:12], 2), 12)
+
+        temp = pc + 4
+        pc = (registers[rs1] + imm) & ~1
+        registers[rd] = temp
+
+    return pc, registers, memory
