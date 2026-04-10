@@ -188,3 +188,49 @@ def execute_instruction(instr, pc, registers, memory):
         registers[rd] = temp
 
     return pc, registers, memory
+
+
+# SIMULATION LOOP
+
+def simulate(instructions, output_file):
+
+    registers = [] * 32
+    memory = [] * 32
+    pc = 0
+
+    with open(output_file, "w") as outfile:
+
+        while True:
+
+            instr = instructions[pc // 4]
+
+            pc, registers, memory = execute_instruction(instr, pc, registers, memory)
+
+            registers[0] = 0
+
+            print_state(pc, registers, outfile)
+
+            if is_halt(instr):
+                break
+
+        print_memory(memory, outfile)
+
+
+# MAIN
+
+def main():
+
+    if len(sys.argv) != 3:
+        print("Usage: python simulator.py <input_file> <output_file>")
+        return
+
+    input_file = sys.argv[1]
+    output_file = sys.argv[2]
+
+    instructions = read_file(input_file)
+
+    simulate(instructions, output_file)
+
+
+if __name__ == "__main__":
+    main()
