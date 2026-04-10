@@ -45,3 +45,13 @@ def is_halt(instr):
     imm = instr[0:7] + instr[20:25]
 
     return rs1 == 0 and rs2 == 0 and int(imm, 2) == 0
+
+
+def execute_instruction(instr, pc, registers, memory):
+
+    opcode = instr[25:32]
+    rd = int(instr[20:25], 2)
+    funct3 = instr[17:20]
+    rs1 = int(instr[12:17], 2)
+    rs2 = int(instr[7:12], 2)
+    funct7 = instr[0:7]
