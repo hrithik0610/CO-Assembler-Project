@@ -20,5 +20,14 @@ if opcode == "0110011":
 
     elif funct3 == "110":
         registers[rd] = registers[rs1] | registers[rs2]
+    
+    elif funct3 == "111":
+        registers[rd] = registers[rs1] & registers[rs2]
+
+    elif funct3 == "001":
+        registers[rd] = registers[rs1] << (registers[rs2] & 0x1F)
+    
+    elif funct3 == "101":
+        registers[rd] = (registers[rs1] & 0xFFFFFFFF) >> (registers[rs2] & 0x1F)
 
     pc += 4
