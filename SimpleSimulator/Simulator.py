@@ -55,3 +55,68 @@ def execute_instruction(instr, pc, registers, memory):
     rs1 = int(instr[12:17], 2)
     rs2 = int(instr[7:12], 2)
     funct7 = instr[0:7]
+
+    # R-TYPE
+    if opcode == "0110011":
+
+        if funct3 == "000":
+            if funct7 == "0000000": # add
+                registers[rd] = registers[rs1] + registers[rs2]
+            elif funct7 == "0100000": # sub
+                registers[rd] = registers[rs1] - registers[rs2]
+
+        elif funct3 == "010": # slt
+            registers[rd] = int(registers[rs1] < registers[rs2])
+
+        elif funct3 == "011": # sltu
+            registers[rd] = int((registers[rs1] & 0xFFFFFFFF) < (registers[rs2] & 0xFFFFFFFF))
+
+        elif funct3 == "100": #xor
+            registers[rd] = registers[rs1] ^ registers[rs2]
+
+        elif funct3 == "110": #or
+            registers[rd] = registers[rs1] | registers[rs2]
+
+        elif funct3 == "111": #and
+            registers[rd] = registers[rs1] & registers[rs2]
+
+        elif funct3 == "001": #sll
+            registers[rd] = registers[rs1] << (registers[rs2] & 0x1F)
+
+        elif funct3 == "101": #srl
+            registers[rd] = (registers[rs1] & 0xFFFFFFFF) >> (registers[rs2] & 0x1F)
+
+        pc += 4
+
+    # I-TYPE 
+    elif opcode == "0010011":  # addi, sltiu
+
+        imm = sign_extend(int(instr[0:12], 2), 12)
+
+        if funct3 == "000":  # addi
+            registers[rd] = registers[rs1] + imm
+
+        elif funct3 == "011":  # sltiu
+            registers[rd] = int((registers[rs1] & 0xFFFFFFFF) < (imm & 0xFFFFFFFF))
+
+        pc += 4
+
+    # LOAD
+    elif opcode == "0000011":  # lw
+
+        imm = sign_extend(int(instr[0:12], 2), 12)
+        addr = registers[rs1] + imm
+        registers[rd] = memory[addr // 4]
+
+        pc += 4
+
+    # STORE
+    elif opcode == "0100011":  # sw
+
+        imm = int(instr[0:7] + instr[20:25], 2)
+        imm = sign_extend(imm, 12)
+
+        addr = registers[rs1] + imm
+        memory[addr // 4] = registers[rs2]
+
+        pc += 4
