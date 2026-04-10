@@ -121,6 +121,40 @@ def execute_instruction(instr, pc, registers, memory):
 
         pc += 4
 
+    # BRANCH
+    elif opcode == "1100011":
+
+        imm = (
+            instr[0] + instr[24] + instr[1:7] +
+            instr[20:24] + "0"
+        )
+        imm = sign_extend(int(imm, 2), 13)
+
+        take = False
+
+        if funct3 == "000":  # beq
+            take = registers[rs1] == registers[rs2]
+
+        elif funct3 == "001":  # bne
+            take = registers[rs1] != registers[rs2]
+
+        elif funct3 == "100":  # blt
+            take = registers[rs1] < registers[rs2]
+
+        elif funct3 == "101":  # bge
+            take = registers[rs1] >= registers[rs2]
+
+        elif funct3 == "110":  # bltu
+            take = (registers[rs1] & 0xFFFFFFFF) < (registers[rs2] & 0xFFFFFFFF)
+
+        elif funct3 == "111":  # bgeu
+            take = (registers[rs1] & 0xFFFFFFFF) >= (registers[rs2] & 0xFFFFFFFF)
+
+        if take:
+            pc += imm
+        else:
+            pc += 4
+
     # U-TYPE
     elif opcode == "0110111":  # lui
         imm = int(instr[0:20], 2) << 12
