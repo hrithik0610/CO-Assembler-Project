@@ -15,4 +15,10 @@ if opcode == "0110011":
     elif funct3 == "011":
         registers[rd] = int((registers[rs1] & 0xFFFFFFFF) < (registers[rs2] & 0xFFFFFFFF))
 
+    elif funct3 == "100":
+        registers[rd] = registers[rs1] ^ registers[rs2]
+
+    elif funct3 == "110":
+        registers[rd] = registers[rs1] | registers[rs2]
+
     pc += 4
