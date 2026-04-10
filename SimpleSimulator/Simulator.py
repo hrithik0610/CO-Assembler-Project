@@ -1,0 +1,8 @@
+import sys
+
+
+# READ INPUT FILE
+
+def read_file(path):
+    with open(path, "r") as f:
+        return [line.strip() for line in f if line.strip() != ""]
